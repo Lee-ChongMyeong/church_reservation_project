@@ -1,0 +1,41 @@
+{
+  "name": "church_reservation_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lee-ChongMyeong/church_reservation_project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lee-ChongMyeong/church_reservation_project/issues"
+  },
+  "homepage": "https://github.com/Lee-ChongMyeong/church_reservation_project#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "http": "0.0.1-security",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
+    "mongoose": "^5.13.0",
+    "mongoose-random": "^0.1.1",
+    "multer": "^1.4.2",
+    "multer-s3": "^2.9.0",
+    "multer-s3-transform": "^2.10.3",
+    "nodemon": "^2.0.8",
+    "passport": "^0.4.1",
+    "passport-kakao": "^1.0.1",
+    "passport-naver": "^1.0.6",
+    "sanitize-html": "^2.4.0",
+    "sharp": "^0.28.3"
+  }
+}
