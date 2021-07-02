@@ -15,6 +15,7 @@ const classList = new Schema(
 				'https://blog.kakaocdn.net/dn/cyOIpg/btqx7JTDRTq/1fs7MnKMK7nSbrM9QTIbE1/img.jpg'
 		},
         teacherName: { type: String, required: true },
+		churchName: { type: String, required: true },
 	},
 	{ timestamps: true }
 );

@@ -7,7 +7,6 @@ const app = express();
 const cors = require('cors');
 app.use(cors({ origin: '*', credentials: true }));
 
-
 // 미들웨어
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -19,6 +18,6 @@ const http = Server(app);
 
 app.use('/', require('./routers'));
 
-http.listen(process.env.LOVE_PORT, () => {
+http.listen(process.env.EXPRESS_PORT, () => {
 	console.log(`Listening at http://localhost:${process.env.EXPRESS_PORT}`);
 });

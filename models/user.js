@@ -3,17 +3,19 @@ const { Schema } = mongoose;
 
 const user = new Schema(
 	{
+		id: { type: String, required: true, unique: true },
+		password: { type: String, required: true },
 		nickname: { type: String, required: true },
-		socialId: { type: String, required: true },
+		socialId: { type: String },
 		profileImg: {
 			type: String,
-			required: true,
 			default:
 				'https://blog.kakaocdn.net/dn/cyOIpg/btqx7JTDRTq/1fs7MnKMK7nSbrM9QTIbE1/img.jpg'
 		},
 		introduce: { type: String, default: '' },
         churchName: { type: String, default: '' },
         churchDuty: { type: String, default: '' },
+		job: { type: String, default: '' },
         phoneNumber: { type: String, default: '' }
         
 	},
