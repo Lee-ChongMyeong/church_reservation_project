@@ -7,7 +7,8 @@ const classList = new Schema(
 		classDate: { type: String, required: true },
 		classTime: { type: String, required: true },
         category: { type: String, required: true },
-        availableCnt: { type: String, required: true },
+        availableCnt: { type: Number, required: true },
+		currentAvailableCnt: { type: Number, required: true },
         teacherImg: {
 			type: String,
 			required: true,
@@ -16,6 +17,7 @@ const classList = new Schema(
 		},
         teacherName: { type: String, required: true },
 		churchName: { type: String, required: true },
+		userList : {type: Array, required: true }
 	},
 	{ timestamps: true }
 );

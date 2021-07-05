@@ -1,13 +1,13 @@
 const Book = require('./book');
-const classList = require('./classList');
-const material = require('./material');
-const user = require('./user');
+const ClassList = require('./classList');
+const Material = require('./material');
+const User = require('./user');
 
 const DB = {
     Book,
-    classList,
-    material,
-    user
+    ClassList,
+    Material,
+    User
 };
 
 module.exports = DB;
