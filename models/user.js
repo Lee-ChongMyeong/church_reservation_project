@@ -3,9 +3,7 @@ const { Schema } = mongoose;
 
 const user = new Schema(
 	{
-		id: { type: String, required: true, unique: true },
-		password: { type: String, required: true },
-		nickname: { type: String, required: true },
+		name: { type: String, required: true },
 		socialId: { type: String },
 		profileImg: {
 			type: String,
@@ -16,8 +14,9 @@ const user = new Schema(
         churchName: { type: String, default: '' },
         churchDuty: { type: String, default: '' },
 		job: { type: String, default: '' },
-        phoneNumber: { type: String, default: '' }
-        
+        phoneNumber: { type: String, default: '' },
+		provider: { type: String },
+		first: { type: Boolean, default: true }
 	},
 	{ timestamps: true }
 );

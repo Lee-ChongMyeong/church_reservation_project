@@ -15,6 +15,7 @@ const {
 require('dotenv').config();
 
 
+
 // [아이디, 비밀번호 회원가입간 확인]
 function check_id(id) {
 	if (id.length < 3) {
