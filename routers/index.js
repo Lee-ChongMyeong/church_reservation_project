@@ -6,6 +6,6 @@ router.use('/classList', require('./classList'));
 router.use('/mypage', require('./mypage'));
 router.use('/book', require('./book'));
 router.use('/login', require('./login'));
-router.use('/kauth.kakao.com', require('./kakao'));
+router.use('/admin', require('./admin'));
 
 module.exports = router;

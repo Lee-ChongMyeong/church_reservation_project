@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const user = new Schema(
 	{
 		name: { type: String, required: true },
+		nickname: { type: String, default:'' },
 		socialId: { type: String },
 		profileImg: {
 			type: String,
@@ -13,10 +14,13 @@ const user = new Schema(
 		introduce: { type: String, default: '' },
         churchName: { type: String, default: '' },
         churchDuty: { type: String, default: '' },
+		status: { type: String, default: 'user' },
 		job: { type: String, default: '' },
         phoneNumber: { type: String, default: '' },
 		provider: { type: String },
-		first: { type: Boolean, default: true }
+		first: { type: Boolean, default: true },
+		applyStatus: { type: Boolean, default: false },
+		classPlace: {type: Array }
 	},
 	{ timestamps: true }
 );

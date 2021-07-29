@@ -1,9 +1,10 @@
 const express = require('express');
+const app = express();
 require('./models/mongoose');
 const { Server } = require('http');
+require('./models/mongoose');
 require('dotenv').config();
 
-const app = express();
 const cors = require('cors');
 app.use(cors({ origin: '*', credentials: true }));
 
@@ -11,6 +12,9 @@ app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
+
+const passport = require('./auth/passport');
+app.use(passport.initialize());
 
 // const passport = require('./auth/passport');
 // app.use(passport.initialize());

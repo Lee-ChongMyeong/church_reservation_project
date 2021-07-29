@@ -3,11 +3,11 @@ const router = express.Router();
 const {
 	Book,
     ClassList,
-    Material,
-    User
+    Register
 } = require('../models');
 const authMiddleware = require('../auth/authMiddleware');
 const jwt = require('jsonwebtoken');
+const multer = require('../lib/multer');
 const moment = require('moment');
 require('moment-timezone');
 moment.tz.setDefault('Asia/Seoul');
@@ -16,17 +16,28 @@ require('dotenv').config();
 
 // 교육 리스트 
 router.get('/', async(req, res) => {
-    let result = { msg: 'success', classLists: [] };
     try{
-        let classes = await ClassList.find({ })
-        result['classLists'].push(classes);
+        let classes = await ClassList.find({ approveStatus : true }).select('classPicture category classTitle classPlace classIntroduce availableCnt')
+        res.json({ msg: "success", classLists: classes })
     }catch(err){
         result['msg'] = 'error';
     }
-    res.json({ msg: 'success', result : result})
-})
+});
 
-// 교육 신청
+// 교육 상세 리스트
+router.get('/detail/:classId', authMiddleware, async(req, res) => {
+    const classId = req.params.classId;
+    try{
+        let classInfo = await ClassList.find({ _id : classId }).select('classDay classStartTime classEndTime availableCnt teacherName teacherImg')
+        console.log('classInfo', classInfo);
+        
+        res.json({ msg: "success", classListsDetail: classInfo })
+    }catch(err){
+        result['msg'] = 'error';
+    }
+});
+
+// 교육 
 router.post('/classApply', async(req, res) => {
     //const user = res.locals.user;
     try{
@@ -47,7 +58,7 @@ router.post('/classApply', async(req, res) => {
 });
 
 // 교육 취소
-router.delete('/classApply', async(req, res) => {
+router.delete('/classApply', authMiddleware, async(req, res) => {
     //const user = res.locals.user;
     try{
         const { classId, userId } = req.body;
@@ -66,23 +77,35 @@ router.delete('/classApply', async(req, res) => {
 });
 
 // 교육 등록
-router.post('/register', async(req, res) => {
-    //const user = res.locals.user;
+router.post('/register', authMiddleware, multer.fields([{ name: 'classPicture', maxCount: 10}, { name: 'teacherImg', maxCount:10 }]), authMiddleware, async(req, res) => {
+    const user = res.locals.user;
     try{
-        // if(user.nickname !== '관리자'){
-        //     return res.json({ msg: "fail"})
-        // }
+        if(user.status !== 'admin'){
+            return res.json({ msg: "register admin"})
+        }
+
+        console.log('req.body', req.body);
+        let classEndTimeInfo = req.body.classEndTime;
+        let classStartTimeInfo = req.body.classStartTime;
+        console.log('classStartTimeInfo', classStartTimeInfo)
+        console.log('classEndTImeInfo', classEndTimeInfo)
+
         let result = {
             category: req.body.category,
-            classDate: req.body.classDate,
-            classTime: req.body.classTime,
             classTitle: req.body.classTitle,
+            classIntroduce: req.body.classIntroduce,
+            classPicture:  req.files.classPicture[0].transforms[0].location,
             availableCnt: req.body.availableCnt,
-            currentAvailableCnt : req.body.availableCnt,
+            classPlace: req.body.classPlace,
+            classDay: req.body.classDay,
+            classStartTime: classStartTimeInfo,
+            classEndTime: classEndTimeInfo,
             teacherName: req.body.teacherName,
-            churchName: req.body.churchName
+            teacherImg: req.files.teacherImg[0].transforms[0].location,
+            userId : user._id,
         }
-        let result2 = await ClassList.create(result);
+        await ClassList.create(result);
+        
         res.json({ msg: 'success', result: result });
     }catch(err){
         console.log('err', err)
@@ -90,6 +113,54 @@ router.post('/register', async(req, res) => {
     }
 })
 
+// 교육 상세 등록 
+router.post('/detail/:classId', multer.single('teacherImg'), authMiddleware, async(req, res) => {
+    const user = res.locals.user;
+    const classId = req.params.classId;
+    try{
+        console.log('req.file', req.file);
+        let originalClassInfo = await ClassList.findOne({ _id: classId })
 
+        let result = {
+            category: originalClassInfo.category,
+            classTitle: originalClassInfo.classTitle,
+            classIntroduce: originalClassInfo.classIntroduce,
+            classPicture:  originalClassInfo.classPicture,
+            classPlace: originalClassInfo.classPlace,
+            classDay: req.body.classDay,
+            classStartTime: req.body.classStartTime,
+            classEndTime: req.body.classEndTime,
+            availableCnt: req.body.availableCnt,
+            teacherName: req.body.teacherName,
+            teacherImg: req.file.transforms[0].location,
+            userId : user._id,
+        }
+        await ClassList.create(result);
+        
+        res.json({ msg: 'success', result: result });
+    }catch(err){
+        console.log('err', err)
+        res.json({ msg : 'error' })
+    }
+})
+
+// 교육 등록 승인
+router.post('/approve/:classId', authMiddleware, async(req, res) => { 
+    const user = res.locals.user;
+    const classId = req.params.classId;
+    console.log(classId);
+    try{
+        if(user.approveStatus == true){
+            return res.json({ msg: 'not yet approved'})
+        }
+
+        await ClassList.updateOne({ _id : classId }, { $set : { approveStatus : true }})
+        res.json({ msg: 'success' })
+
+    }catch(err){
+        console.log(err);
+		res.status(400).json({ msg: 'fail'})
+    }
+})
 
 module.exports = router;
