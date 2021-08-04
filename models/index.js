@@ -3,6 +3,7 @@ const ClassList = require('./classList');
 const Material = require('./material');
 const User = require('./user');
 const Register = require('./register');
+const ClassRegister = require('./classRegister');
 const Approve = require('./approve');
 
 const DB = {
@@ -11,7 +12,8 @@ const DB = {
     Material,
     User,
     Register,
-    Approve
+    Approve,
+    ClassRegister
 };
 
 module.exports = DB;

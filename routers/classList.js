@@ -3,7 +3,8 @@ const router = express.Router();
 const {
 	Book,
     ClassList,
-    Register
+    Register,
+    ClassRegister
 } = require('../models');
 const authMiddleware = require('../auth/authMiddleware');
 const jwt = require('jsonwebtoken');
@@ -12,7 +13,6 @@ const moment = require('moment');
 require('moment-timezone');
 moment.tz.setDefault('Asia/Seoul');
 require('dotenv').config();
-
 
 // 교육 리스트 
 router.get('/', async(req, res) => {
@@ -37,25 +37,94 @@ router.get('/detail/:classId', authMiddleware, async(req, res) => {
     }
 });
 
-// 교육 
-router.post('/classApply', async(req, res) => {
-    //const user = res.locals.user;
+// 교육 신청
+router.post('/classApply/:classId', authMiddleware, async(req, res) => {
+    const user = res.locals.user;
+    const classId = req.params.classId;
     try{
-        const { classId, userId } = req.body;
-        let classesList = await ClassList.findOne({ _id: classId })
-        console.log(classesList)
-        let availableCount = classesList.availableCnt;
-        console.log(classesList, 'ho', availableCount)
-        classesList['userList'].push(userId);
-        await classesList.save();
-        await ClassList.update({ _id: classId }, {$inc: { currentAvailableCnt : -1 } });
 
-        res.json({ msg : 'success'})
+        const userRegisterCheck = await ClassRegister.find({ userId: user._id, classId: classId})
+        console.log('userRegisterCheck', userRegisterCheck);
+        if (userRegisterCheck){
+            return res.json({ msg: 'already register'})
+        }
+
+        let result = {
+            userId : user._id,
+            classId : classId
+        }
+        await ClassRegister.create(result);
+
+        res.json({ msg : 'success' });
     }catch(err){
         console.log('err', err)
         res.json({ msg : 'fail'})
     }
 });
+
+// 교육 신청 승인
+router.post('/classApply/:classId/approve', authMiddleware, async(req, res) => { 
+    const user = res.locals.user;
+    const classId = req.params.classId;
+    try{
+
+        let classRegisterInfo,
+            classRegisterInfoUserId,
+            classRegisterInfoClassId,
+            classInfo,
+            classUserList,
+            classManagePerson
+
+        classRegisterInfo = await ClassRegister.find({ _id : classId});
+        classRegisterInfoUserId = classRegisterInfo[0].userId;    
+        classRegisterInfoClassId = classRegisterInfo[0].classId;    
+
+        classInfo = await ClassList.find({ _id : classRegisterInfoClassId });
+        classManagePerson = classInfo[0].userId;
+        
+        if (user._id != classManagePerson) {
+            return res.json({ msg : 'not authorized'})
+        }
+
+        classUserList = classInfo[0].userList;
+        classUserList.push(classRegisterInfoUserId);
+
+        await ClassRegister.updateOne({ _id : classId }, { $set : { approveStatus : true }})
+        await ClassList.updateOne({ _id : classRegisterInfoClassId }, { $set : { userList : classUserList }});
+
+        res.json({ msg: 'success' })
+
+    }catch(err){
+        console.log(err);
+		res.status(400).json({ msg: 'fail'})
+    }
+})
+
+// 교육신청 승인 대기 리스트 
+router.get('/classApply', authMiddleware, async(req, res) => { 
+    const user = res.locals.user;
+    try{
+        let classRegisterWaitingList;
+        let myClassList;
+        let myClassListId= [];
+
+        myClassList = await ClassList.find({ userId : user._id });
+
+        for ( let i =0; i < myClassList.length; i++ ) {
+            myClassListId.push(myClassList[i]._id);
+        }
+
+        classRegisterWaitingList = await ClassRegister.find({ approveStatus : true, classId : {$in: myClassListId }});
+
+        console.log(classRegisterWaitingList);
+
+        res.json({ msg: 'success' })
+
+    }catch(err){
+        console.log(err);
+		res.status(400).json({ msg: 'fail'})
+    }
+})
 
 // 교육 취소
 router.delete('/classApply', authMiddleware, async(req, res) => {
