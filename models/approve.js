@@ -9,8 +9,8 @@ const approve = new Schema(
 		introduce: { type: String, required: true },
         userId: { type: String, required: true },
 	},
-	{ timestamps: true }
-);
+	{ timestamps: true, versionKey : false },
+  );
 
 approve.virtual('approveId').get(function () {
 	return this._id.toHexString();

@@ -9,7 +9,7 @@ const register = new Schema(
 		introduce: { type: String, required: true },
         userId: { type: String, required: true },
 	},
-	{ timestamps: true }
+	{ timestamps: true, versionKey : false }
 );
 
 register.virtual('registerId').get(function () {

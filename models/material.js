@@ -7,8 +7,8 @@ const material = new Schema(
 		materialFile: { type: String, required: true },
 		date: { type: String, required: true },
 	},
-	{ timestamps: true }
-);
+	{ timestamps: true, versionKey : false }
+  );
 
 material.virtual('materialId').get(function () {
 	return this._id.toHexString();

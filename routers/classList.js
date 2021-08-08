@@ -4,7 +4,8 @@ const {
 	Book,
     ClassList,
     Register,
-    ClassRegister
+    ClassRegister,
+    User
 } = require('../models');
 const authMiddleware = require('../auth/authMiddleware');
 const jwt = require('jsonwebtoken');
@@ -43,9 +44,15 @@ router.post('/classApply/:classId', authMiddleware, async(req, res) => {
     const classId = req.params.classId;
     try{
 
-        const userRegisterCheck = await ClassRegister.find({ userId: user._id, classId: classId})
-        console.log('userRegisterCheck', userRegisterCheck);
-        if (userRegisterCheck){
+        const userRegisterCheck = await ClassRegister.findOne({ userId: user._id, classId: classId})
+
+        const classRegisterCheck = await ClassList.findOne({ _id: classId, approveStatus: false}); 
+
+        if (classRegisterCheck != null){
+            return res.json({ msg: 'not registered class'});
+        }
+
+        if (userRegisterCheck != null ){
             return res.json({ msg: 'already register'})
         }
 
@@ -107,18 +114,41 @@ router.get('/classApply', authMiddleware, async(req, res) => {
         let classRegisterWaitingList;
         let myClassList;
         let myClassListId= [];
+        let items = [];
+        let temp = {};
+        let total;
 
-        myClassList = await ClassList.find({ userId : user._id });
+        myClassList = await ClassList.find({ userId : user._id, approveStatus : true});
 
-        for ( let i =0; i < myClassList.length; i++ ) {
+        for (let i=0; i < myClassList.length; i++ ) {
             myClassListId.push(myClassList[i]._id);
         }
 
-        classRegisterWaitingList = await ClassRegister.find({ approveStatus : true, classId : {$in: myClassListId }});
 
-        console.log(classRegisterWaitingList);
+        for (let i=0; i < myClassListId.length; i++ ){
+            
+            classRegisterWaitingList = await ClassRegister.find({ approveStatus : false, classId : {$in: myClassListId[i] }}, { createdAt: false, updatedAt: false, id: false });
 
-        res.json({ msg: 'success' })
+            let userInfo = await User.findOne({ _id : classRegisterWaitingList.userId})
+            temp = {
+                approveStatus : classRegisterWaitingList[0].approveStatus,
+                userId : classRegisterWaitingList[0].userId,
+                classId: classRegisterWaitingList[0].classId,
+                name : userInfo.name,
+                profileImg: userInfo.profileImg,
+                introduce: userInfo.introduce,
+                phoneNumber: userInfo.phoneNumber 
+            }
+
+            if (classRegisterWaitingList.length > 0){
+                items.push(temp);
+            }
+        }
+
+        total = items.length;
+
+
+        res.json({ msg: 'success', items, total });
 
     }catch(err){
         console.log(err);

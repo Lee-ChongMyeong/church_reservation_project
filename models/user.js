@@ -22,7 +22,7 @@ const user = new Schema(
 		applyStatus: { type: Boolean, default: false },
 		classPlace: {type: Array }
 	},
-	{ timestamps: true }
+	{ timestamps: true, versionKey : false },
 );
 
 user.virtual('userId').get(function () {

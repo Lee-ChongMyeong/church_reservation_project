@@ -28,8 +28,8 @@ const classList = new Schema(
 		userList : {type: Array, required: true },
 		userId : {type: String, required: true}
 	},
-	{ timestamps: true }
-);
+	{ timestamps: true, versionKey : false }
+  );
 
 classList.virtual('classId').get(function () {
 	return this._id.toHexString();

@@ -7,8 +7,8 @@ const book = new Schema(
 		bookCategory: { type: String, required: true },
 		bookImg: { type: String, required: true },
 	},
-	{ timestamps: true }
-);
+	{ timestamps: true, versionKey : false }
+  );
 
 book.virtual('bookId').get(function () {
 	return this._id.toHexString();

@@ -7,8 +7,8 @@ const classRegister = new Schema(
         classId : { type: String, required: true},
         approveStatus: { type: Boolean, default: false },
 	},
-	{ timestamps: true }
-);
+	{ timestamps: true, versionKey : false },
+  );
 
 classRegister.virtual('registerId').get(function () {
 	return this._id.toHexString();
