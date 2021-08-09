@@ -288,4 +288,60 @@ router.post('/approve/:classId', authMiddleware, async(req, res) => {
     }
 })
 
+// 교육 등록 승인 대기 리스트
+router.get('/register/waiting', authMiddleware, async(req, res) => {
+    const user = res.locals.user;
+    try{
+
+        let items = await ClassList.find({ approveStatus: false})
+
+        res.json({ msg: 'success', items })
+
+    }catch(err){
+        console.log(err);
+        res.json({ msg: 'fail' });
+    }
+})
+
+// 교육 등록 거절
+router.delete('/register/reject/:uid', authMiddleware, async(req, res) => {
+    const user = res.locals.user;
+    const uid = req.params.uid;
+    try{
+        let waitingList = await ClassList.deleteOne({ _id: uid, approveStatus: false })
+        
+        if(waitingList.deletedCount == 0 ){
+            return res.json({ msg: 'NO_EXISTS_DATA'})
+        }
+
+        res.json({ msg: 'success'})
+    }catch(err){
+        console.log('err', err);
+        res.json({ msg: 'fail'})
+    }
+})
+
+// 교육 등록 취소 -- 진행중
+router.delete('/register/cancel/:classId', authMiddleware, async(req, res) => {
+    const user = res.locals.user;
+    const classId = req.params.classId;
+    try{
+
+        let myClassListInfo = await ClassList.findOne({ _id: classId, userId: user._id});
+        console.log(myClassListInfo);
+
+        if (myClassListInfo.length == 0 ) {
+            return res.json({ msg: 'NO_EXISTS_DATA'})
+        }
+        
+        await ClassList.updateOne({ _id : classId, userId: user._id }, { $set : { approveStatus : false }})
+
+        res.json({ msg : 'success'})
+    }catch(err){
+        console.log('err', err)
+        res.json({ msg : 'fail'})
+    }
+});
+
+
 module.exports = router;
