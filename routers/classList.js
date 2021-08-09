@@ -21,7 +21,8 @@ router.get('/', async(req, res) => {
         let classes = await ClassList.find({ approveStatus : true }).select('classPicture category classTitle classPlace classIntroduce availableCnt')
         res.json({ msg: "success", classLists: classes })
     }catch(err){
-        result['msg'] = 'error';
+        console.log('err', err)
+        res.json({ msg : 'fail'})
     }
 });
 
@@ -29,12 +30,14 @@ router.get('/', async(req, res) => {
 router.get('/detail/:classId', authMiddleware, async(req, res) => {
     const classId = req.params.classId;
     try{
-        let classInfo = await ClassList.find({ _id : classId }).select('classDay classStartTime classEndTime availableCnt teacherName teacherImg')
+        let classInfo = await ClassList.findOne({ _id : classId }).select('classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
         console.log('classInfo', classInfo);
+        classInfo.currentAvailableCnt = (classInfo.availableCnt - classInfo.userList.length);
         
         res.json({ msg: "success", classListsDetail: classInfo })
     }catch(err){
-        result['msg'] = 'error';
+        console.log('err', err)
+        res.json({ msg : 'fail'})
     }
 });
 
@@ -106,6 +109,7 @@ router.post('/classApply/:classId/approve', authMiddleware, async(req, res) => {
 		res.status(400).json({ msg: 'fail'})
     }
 })
+// 교육 신청 대기 리스트
 
 // 교육신청 승인 대기 리스트 
 router.get('/classApply', authMiddleware, async(req, res) => { 
@@ -124,22 +128,19 @@ router.get('/classApply', authMiddleware, async(req, res) => {
             myClassListId.push(myClassList[i]._id);
         }
 
-
-        for (let i=0; i < myClassListId.length; i++ ){
-            
-            classRegisterWaitingList = await ClassRegister.find({ approveStatus : false, classId : {$in: myClassListId[i] }}, { createdAt: false, updatedAt: false, id: false });
-
-            let userInfo = await User.findOne({ _id : classRegisterWaitingList.userId})
+        classRegisterWaitingList = await ClassRegister.find({ approveStatus : false, classId : {$in: myClassListId }}, { createdAt: false, updatedAt: false, id: false });
+        for (let i = 0; i < classRegisterWaitingList.length; i++ ){
+            let userInfo = await User.findOne({ _id : classRegisterWaitingList[i].userId})
             temp = {
-                approveStatus : classRegisterWaitingList[0].approveStatus,
-                userId : classRegisterWaitingList[0].userId,
-                classId: classRegisterWaitingList[0].classId,
+                _id : classRegisterWaitingList[i]._id,
+                approveStatus : classRegisterWaitingList[i].approveStatus,
+                userId : classRegisterWaitingList[i].userId,
+                classId: classRegisterWaitingList[i].classId,
                 name : userInfo.name,
                 profileImg: userInfo.profileImg,
                 introduce: userInfo.introduce,
                 phoneNumber: userInfo.phoneNumber 
             }
-
             if (classRegisterWaitingList.length > 0){
                 items.push(temp);
             }
@@ -147,6 +148,9 @@ router.get('/classApply', authMiddleware, async(req, res) => {
 
         total = items.length;
 
+        if(total == 0 ){
+            return res.json ({ msg: 'no waiting list'})
+        }
 
         res.json({ msg: 'success', items, total });
 
@@ -156,17 +160,39 @@ router.get('/classApply', authMiddleware, async(req, res) => {
     }
 })
 
-// 교육 취소
-router.delete('/classApply', authMiddleware, async(req, res) => {
-    //const user = res.locals.user;
+// 교육 거절
+router.delete('/reject/:uid', authMiddleware, async(req, res) => {
+    const user = res.locals.user;
+    const uid = req.params.uid;
     try{
-        const { classId, userId } = req.body;
-        let classesList = await ClassList.findOne({ _id: classId })
-        let availableCount = classesList.availableCnt;
-        console.log(classesList, 'ho', availableCount)
-        classesList['userList'].deleteOne({ userId: userId });
-        await classesList.save();
-        await ClassList.update({ _id: classId }, {$inc: { currentAvailableCnt : +1 } });
+        let waitingList = await ClassRegister.deleteOne({ _id: uid, approveStatus: false })
+        console.log('waitingList', waitingList);
+        
+        if(waitingList.deletedCount == 0 ){
+            return res.json({ msg: 'NO_EXISTS_DATA'})
+        }
+
+        res.json({ msg: 'success'})
+    }catch(err){
+        console.log('err', err);
+        res.json({ msg: 'fail'})
+    }
+})
+
+// 교육 취소
+router.delete('/cancel/:classRegisterId', authMiddleware, async(req, res) => {
+    const user = res.locals.user;
+    const classRegisterId = req.params.classRegisterId;
+    try{
+
+        let classRegisterInfo = await ClassRegister.findOne({ _id : classRegisterId });
+        let studentId = classRegisterInfo.userId;
+        let classListInfo = await ClassList.findOne({ _id : classRegisterInfo.classId });
+        let userList = classListInfo.userList;
+        let updatedUserList = userList.splice(studentId, 1);
+
+        await ClassList.updateOne({_id : classRegisterInfo.classId }, { $set : { userList : updatedUserList }});
+        await ClassRegister.updateOne({ _id : classRegisterId }, { $set : { approveStatus : false }})
 
         res.json({ msg : 'success'})
     }catch(err){
