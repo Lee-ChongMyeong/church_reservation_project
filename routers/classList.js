@@ -14,6 +14,7 @@ const moment = require('moment');
 require('moment-timezone');
 moment.tz.setDefault('Asia/Seoul');
 require('dotenv').config();
+const _ = require('lodash');
 
 // 교육 리스트 
 router.get('/', async(req, res) => {
@@ -30,7 +31,7 @@ router.get('/', async(req, res) => {
 router.get('/detail/:classId', authMiddleware, async(req, res) => {
     const classId = req.params.classId;
     try{
-        let classInfo = await ClassList.findOne({ _id : classId }).select('classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
+        let classInfo = await ClassList.findOne({ _id : classId }).select('classPicture classTitle classIntroduce classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
         console.log('classInfo', classInfo);
         classInfo.currentAvailableCnt = (classInfo.availableCnt - classInfo.userList.length);
         
@@ -40,6 +41,77 @@ router.get('/detail/:classId', authMiddleware, async(req, res) => {
         res.json({ msg : 'fail'})
     }
 });
+
+// 교육 상세 수정
+router.patch('/detail/:classId', authMiddleware, async(req, res) => {
+    const classId = req.params.classId;
+    const data = req.body;
+    try{
+        let classInfo = await ClassList.findOne({ _id : classId }).select('classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
+        
+        data = _.pickBy(
+            {
+              _id,
+              campaign_id,
+              user_id,
+              product_id,
+              reward_reason,
+              reward_info,
+              reward_expired_at,
+              status,
+              provided_at,
+              expired_at,
+              delivered_at,
+              received,
+              received_at,
+            },
+            (param) => {
+              return typeof param !== "undefined";
+            }
+          )
+
+          console.log('data', data);
+      
+
+        //  = sanitize(data.name);
+		// user.nickname = sanitize(data.nickname);
+		// user.churchName = sanitize(data.churchName);
+		// user.churchDuty = sanitize(data.churchDuty);
+		// user.introduce = sanitize(data.introduce);
+		// user.job = sanitize(data.job);
+		// user.phoneNumber = sanitize(data.phoneNumber);
+		// user.first = false;
+
+
+        res.json({ msg: "success", classListsDetail: classInfo })
+    }catch(err){
+        console.log('err', err)
+        res.json({ msg : 'fail'})
+    }
+});
+
+
+// 교육 정보 수정
+router.patch('/:classId', authMiddleware, async(req, res) => {
+    const classId = req.params.classId;
+    const data = req.body;
+    try{
+        let classInfo = await ClassList.findOne({ _id : classId })
+        console.log(classInfo);
+
+
+    }catch(err){
+        console.log('err', err)
+        res.json({ msg : 'fail'})
+    }
+});
+
+
+// 교육신청 고객내역 삭제 
+
+
+
+
 
 // 교육 신청
 router.post('/classApply/:classId', authMiddleware, async(req, res) => {
@@ -321,7 +393,7 @@ router.delete('/register/reject/:uid', authMiddleware, async(req, res) => {
     }
 })
 
-// 교육 등록 취소 -- 진행중
+// 교육 등록 취소   
 router.delete('/register/cancel/:classId', authMiddleware, async(req, res) => {
     const user = res.locals.user;
     const classId = req.params.classId;

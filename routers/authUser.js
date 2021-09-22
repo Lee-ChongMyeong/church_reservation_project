@@ -59,10 +59,6 @@ router.patch('/', authMiddleware, multer.single('profileImg'), async(req, res) =
 			return res.status(400).json({ msg: 'please check introduce length' });
 		}
 
-		console.log('data', data)
-		console.log('data.defaultImg', data.defaultImg);
-		console.log('req.file', req.file.transforms[0].location);
-
 		// 프로필 이미지가 들어온 경우
 		if (data.defaultImg == 'true') {
 			deleteImg(user.profileImg);
