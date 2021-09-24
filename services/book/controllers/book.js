@@ -5,8 +5,9 @@ const {
     ClassList,
     Material,
     User
-} = require('../models');
-const authMiddleware = require('../auth/authMiddleware');
+} = require('../../../models');
+const sanitize = require('../../../lib/sanitizeHtml');
+const authMiddleware = require('../../../auth/authMiddleware');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const mongoose = require('mongoose');

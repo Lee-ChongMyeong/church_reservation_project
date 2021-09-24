@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../auth/authMiddleware');
-const sanitize = require('../lib/sanitizeHtml');
-const s3 = require('../lib/s3');
-const multer = require('../lib/multer');
-const { User } = require('../models');
+const authMiddleware = require('../../../auth/authMiddleware');
+const sanitize = require('../../../lib/sanitizeHtml');
+const s3 = require('../../../lib/s3');
+const multer = require('../../../lib/multer');
+const { User } = require('../../../models');
 require('dotenv').config();
 
 // s3에서 이미지 삭제
@@ -23,28 +23,9 @@ const deleteImg = (fileName) => {
 	);
 };
 
-// 유저 정보
-router.get('/', authMiddleware, async (req, res) => {
-	const user = res.locals.user;
-	console.log(user)
-	res.json({
-		userId: user.userId,
-		name: user.name,
-		nickname: user.nickname,
-		churchName: user.churchName,
-		churchDuty: user.churchDuty,
-		job: user.job,
-		phoneNumber: user.phoneNumber,
-		profileImg: user.profileImg,
-		introduce: user.introduce,
-		first: user.first,
-		applyStatus: user.applyStatus,
-		status: user.status
-	});
-});
 
 // 유저 정보 등록(로그인)
-router.patch('/', authMiddleware, multer.single('profileImg'), async(req, res) => {
+router.put('/register', authMiddleware, multer.single('profileImg'), async(req, res) => {
 	try{
 		const user = res.locals.user;
 		const data = req.body;
@@ -97,5 +78,74 @@ router.patch('/', authMiddleware, multer.single('profileImg'), async(req, res) =
 		res.json({ msg: 'fail' });
 	}
 })
+
+/**
+ * @swagger
+ * /user/register/:
+ *  post:
+ *    summary: 유저 정보 등록(로그인)
+ *    tags: [user]
+ *    security:
+ *      - api_key: []
+ *    consumes:
+ *      - multipart/form-data
+ *    parameters:
+ *      - name: name
+ *        description: 이름
+ *        in: formData
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: nickname
+ *        description: 닉네임
+ *        in: formData
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: churchName
+ *        description: 교회이름
+ *        in: formData
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: churchDuty
+ *        description: 교회 직책
+ *        in: formData
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: introduce
+ *        description: 자기소개
+ *        in: formData
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: job
+ *        description: 직업
+ *        in: formData
+ *        required: true
+ *        schema:
+ *          type: string 
+ *      - name: phoneNumber
+ *        description: 핸드폰번호
+ *        in: formData
+ *        required: true
+ *        schema:
+ *          type: string
+ *      - name: profileImg
+ *        description: 프로필이미지
+ *        in: formData
+ *        required: false
+ *        schema:
+ *          type: file
+ *    responses:
+ *      200:
+ *        description: A successful response
+ *        content:
+ *          application/json:
+ *            schema:
+ */
+
+
 
 module.exports = router;

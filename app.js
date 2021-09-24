@@ -1,7 +1,12 @@
 const express = require('express');
 const app = express();
-require('./models/mongoose');
 const { Server } = require('http');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerDocument = require('./src/swagger')
+const swaggerSpec = swaggerJsdoc(swaggerDocument);
+
+require('./models/mongoose');
 require('./models/mongoose');
 require('dotenv').config();
 
@@ -16,11 +21,14 @@ app.use(express.static('public'));
 const passport = require('./auth/passport');
 app.use(passport.initialize());
 
-// const passport = require('./auth/passport');
-// app.use(passport.initialize());
 const http = Server(app);
 
-app.use('/', require('./routers'));
+
+
+// swagger
+app.use('/', require('./services'));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {explorer: true }));
 
 http.listen(process.env.EXPRESS_PORT, () => {
 	console.log(`Listening at http://localhost:${process.env.EXPRESS_PORT}`);

@@ -40,6 +40,8 @@
     "passport-kakao": "^1.0.1",
     "passport-naver": "^1.0.6",
     "sanitize-html": "^2.4.0",
-    "sharp": "^0.28.3"
+    "sharp": "^0.28.3",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6"
   }
 }
