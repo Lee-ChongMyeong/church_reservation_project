@@ -15,6 +15,10 @@ const options = {
                 url: "http://localhost:3000",
                 description: "Local server"
             },
+            {
+                url: "http://54.180.139.155",
+                description: "Production server"
+            }
         ],
         components: {
             securitySchemes: {
