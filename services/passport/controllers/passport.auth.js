@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 router.get('/', (req, res) => {
 	res.send(
-		`<a href='http://localhost:3000/auth/kakao'> 카카오 로그인 </a>`
+		`<a href='http://localhost:3000/passport/auth/kakao'> 카카오 로그인 </a>`
 	);
 });
 

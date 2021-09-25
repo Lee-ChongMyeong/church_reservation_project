@@ -5,7 +5,7 @@ const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
 
 
-// 교회 등록 승인 리스트
+// 교회 단체 승인 리스트
 router.get('/approve', authMiddleware, async(req, res) => {
 
     try{

@@ -18,7 +18,7 @@ router.get(
 	'/kakao/oauth',
 	passport.authenticate('kakao', { failureRedirect: '/passport/auth' }),
 	(req, res) => {
-		res.redirect(`http://localhost:3000/auth/${makeToken(req.user._id)}`);
+		res.redirect(`http://localhost:3000/passport/auth/${makeToken(req.user._id)}`);
 		console.log(`${makeToken(req.user._id)}`);
 	}
 );

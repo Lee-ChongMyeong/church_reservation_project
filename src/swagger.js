@@ -8,7 +8,7 @@ const options = {
             contact: {
                 name: "Clever Lee",
                 email: "dlchdaud1327@gmail.com"
-            }
+            },
         },
         servers: [
             {
@@ -34,7 +34,10 @@ const options = {
         security: [{
           jwt: []
         }],
+        basePath: "/v1",
+        
     },
+    
 
     apis: ['app.js',
         'services/lesson/controllers/*',
@@ -47,5 +50,7 @@ const options = {
         'services/manager/admin/*'
     ],
 };
+
+// https://editor.swagger.io/#!/
 
 module.exports = options;
