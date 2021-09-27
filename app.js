@@ -23,8 +23,6 @@ app.use(passport.initialize());
 
 const http = Server(app);
 
-
-
 // swagger
 app.use('/', require('./services'));
 

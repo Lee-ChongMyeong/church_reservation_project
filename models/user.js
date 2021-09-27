@@ -1,7 +1,4 @@
 const mongoose = require('mongoose');
-const autoIncrement = require('mongoose-auto-increment');
-
-autoIncrement.initialize(mongoose.connection);
 const { Schema } = mongoose;
 
 const user = new Schema(
@@ -28,13 +25,6 @@ const user = new Schema(
 	},
 	{ timestamps: true, versionKey : false },
 );
-
-user.plugin(autoIncrement.plugin, {
-    model: 'User',
-    field: 'user_id',
-    startAt: 0, //시작
-    increment: 1 // 증가
-});
 
 user.virtual('userId').get(function () {
 	return this._id.toHexString();

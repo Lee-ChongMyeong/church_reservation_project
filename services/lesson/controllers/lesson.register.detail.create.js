@@ -22,9 +22,9 @@ const _ = require('lodash');
 
 
 // 수업 상세 등록 
-router.post('/detail/:classId', multer.single('teacherImg'), authMiddleware, async(req, res) => {
+router.post('/register/:uid', multer.single('teacherImg'), authMiddleware, async(req, res) => {
     const user = res.locals.user;
-    const classId = req.params.classId;
+    const classId = req.params.uid;
     try{
         console.log('req.file', req.file);
         let originalClassInfo = await Lesson.findOne({ _id: classId })
