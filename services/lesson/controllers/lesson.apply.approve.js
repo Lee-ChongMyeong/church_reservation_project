@@ -38,7 +38,7 @@ router.post('/apply/:classId/approve', authMiddleware, async(req, res) => {
         classRegisterInfoUserId = classRegisterInfo[0].userId;    
         classRegisterInfoClassId = classRegisterInfo[0].classId;    
 
-        classInfo = await ClassList.find({ _id : classRegisterInfoClassId });
+        classInfo = await Lesson.find({ _id : classRegisterInfoClassId });
         classManagePerson = classInfo[0].userId;
         
         if (user._id != classManagePerson) {
@@ -49,7 +49,7 @@ router.post('/apply/:classId/approve', authMiddleware, async(req, res) => {
         classUserList.push(classRegisterInfoUserId);
 
         await ClassRegister.updateOne({ _id : classId }, { $set : { approveStatus : true }})
-        await ClassList.updateOne({ _id : classRegisterInfoClassId }, { $set : { userList : classUserList }});
+        await Lesson.updateOne({ _id : classRegisterInfoClassId }, { $set : { userList : classUserList }});
 
         res.json({ msg: 'success' })
 
