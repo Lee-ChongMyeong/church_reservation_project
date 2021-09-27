@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -25,7 +27,7 @@ router.post('/detail/:classId', multer.single('teacherImg'), authMiddleware, asy
     const classId = req.params.classId;
     try{
         console.log('req.file', req.file);
-        let originalClassInfo = await ClassList.findOne({ _id: classId })
+        let originalClassInfo = await Lesson.findOne({ _id: classId })
 
         let result = {
             category: originalClassInfo.category,
@@ -41,7 +43,7 @@ router.post('/detail/:classId', multer.single('teacherImg'), authMiddleware, asy
             teacherImg: req.file.transforms[0].location,
             userId : user._id,
         }
-        await ClassList.create(result);
+        await Lesson.create(result);
         
         res.json({ msg: 'success', result: result });
     }catch(err){

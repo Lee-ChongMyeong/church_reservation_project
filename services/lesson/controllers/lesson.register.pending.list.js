@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -22,17 +24,24 @@ const _ = require('lodash');
 // 수업 등록 승인 대기 리스트
 router.get('/register/pending', authMiddleware, async(req, res) => {
     const user = res.locals.user;
+    let items, total, data = {};
     try{
 
-        let items = await ClassList.find({ approveStatus: false})
+        let result = await Lesson.find({ approveStatus: false})
+        console.log('res', res);
+        data = {
+            items: result,
+            total: result.length
+        }
+        console.log('data', data);
 
-        res.json({ msg: 'success', items })
+        res.json({ msg: 'success', data})  
 
     }catch(err){
         console.log(err);
         res.json({ msg: 'fail' });
     }
-})
+});
 
 /**
  * @swagger

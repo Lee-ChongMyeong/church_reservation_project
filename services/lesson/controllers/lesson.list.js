@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -17,11 +19,18 @@ moment.tz.setDefault('Asia/Seoul');
 require('dotenv').config();
 const _ = require('lodash');
 
-// 교육 리스트
+// 수업 리스트
 router.get('/', async(req, res) => {
+    let items, total, data = {};
     try{
-        let classes = await ClassList.find({ approveStatus : true }).select('classPicture category classTitle classPlace classIntroduce availableCnt')
-        res.json({ msg: "success", classLists: classes })
+        let classes = await Lesson.find({ approveStatus : true }).select('classPicture category classTitle classPlace classIntroduce availableCnt')
+
+        data = {
+            items: classes,
+            total: classes.length 
+        }
+
+        res.json({ msg: "success", data })
     }catch(err){
         console.log('err', err)
         res.json({ msg : 'fail'})

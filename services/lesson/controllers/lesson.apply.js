@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 
 const sanitize = require('../../../lib/sanitizeHtml');
@@ -27,7 +29,7 @@ router.post('/apply/:classId', authMiddleware, async(req, res) => {
 
         const userRegisterCheck = await ClassRegister.findOne({ userId: user._id, classId: classId})
 
-        const classRegisterCheck = await ClassList.findOne({ _id: classId, approveStatus: false}); 
+        const classRegisterCheck = await Lesson.findOne({ _id: classId, approveStatus: false}); 
 
         if (classRegisterCheck != null){
             return res.json({ msg: 'not registered class'});

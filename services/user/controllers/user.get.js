@@ -11,21 +11,35 @@ require('dotenv').config();
 // 유저 정보
 router.get('/', authMiddleware, async (req, res) => {
 	const user = res.locals.user;
-	console.log(user)
-	res.json({
-		userId: user.userId,
-		name: user.name,
-		nickname: user.nickname,
-		churchName: user.churchName,
-		churchDuty: user.churchDuty,
-		job: user.job,
-		phoneNumber: user.phoneNumber,
-		profileImg: user.profileImg,
-		introduce: user.introduce,
-		first: user.first,
-		applyStatus: user.applyStatus,
-		status: user.status
-	});
+	let item, userInfo, data = {};
+
+	try{
+
+		data = {
+			userId: user.userId,
+			name: user.name,
+			nickname: user.nickname,
+			churchName: user.churchName,
+			churchDuty: user.churchDuty,
+			job: user.job,
+			phoneNumber: user.phoneNumber,
+			profileImg: user.profileImg,
+			introduce: user.introduce,
+			first: user.first,
+			applyStatus: user.applyStatus,
+			status: user.status
+		}
+
+		res.json({ msg: 'success', data })   
+
+	}catch(err){
+		console.log(err);
+		res.status(400).json({ msg: 'fail'})
+	}
+	
+
+
+	
 });
 
 /**

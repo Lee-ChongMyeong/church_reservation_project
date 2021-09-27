@@ -23,12 +23,15 @@ const deleteImg = (fileName) => {
 	);
 };
 
-
 // 유저 정보 등록(로그인)
 router.put('/register', authMiddleware, multer.single('profileImg'), async(req, res) => {
 	try{
 		const user = res.locals.user;
+		console.log('user', user);
 		const data = req.body;
+		
+		console.log('data', data);
+		console.log('nickname', data.nickname);
 
 		if (user.first == true && (await User.findOne({ nickname: data.nickname }))) {
 			return res.status(400).json({ msg: 'unavailable_nickname' });
@@ -61,7 +64,7 @@ router.put('/register', authMiddleware, multer.single('profileImg'), async(req, 
 
 		await user.save();
 
-		res.json({
+		userInfo = {
 			userId: user._id,
 			name: user.name,
 			nickname: user.nickname,
@@ -72,7 +75,10 @@ router.put('/register', authMiddleware, multer.single('profileImg'), async(req, 
 			job: user.job,
 			phoneNumber: user.phoneNumber,
 			first: false
-		});
+		}
+
+		res.status(200).json({ msg: 'success', data: userInfo })
+
 	}catch(err){
 		console.log(err);
 		res.json({ msg: 'fail' });
@@ -81,12 +87,12 @@ router.put('/register', authMiddleware, multer.single('profileImg'), async(req, 
 
 /**
  * @swagger
- * /user/register/:
- *  post:
+ * /user/register:
+ *  put:
  *    summary: 유저 정보 등록(로그인)
  *    tags: [user]
  *    security:
- *      - api_key: []
+ *      - jwt: []
  *    consumes:
  *      - multipart/form-data
  *    parameters:
@@ -141,9 +147,6 @@ router.put('/register', authMiddleware, multer.single('profileImg'), async(req, 
  *    responses:
  *      200:
  *        description: A successful response
- *        content:
- *          application/json:
- *            schema:
  */
 
 

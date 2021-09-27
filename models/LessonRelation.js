@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const classRegister = new Schema(
+const lessonRelation = new Schema(
 	{
         userId: { type: String, required: true },
         classId : { type: String, required: true},
@@ -10,18 +10,18 @@ const classRegister = new Schema(
 	{ timestamps: true, versionKey : false },
   );
 
-classRegister.virtual('registerId').get(function () {
+lessonRelation.virtual('registerId').get(function () {
 	return this._id.toHexString();
 });
 
-classRegister.set('toObject', {
+lessonRelation.set('toObject', {
 	virtuals: true
 });
-classRegister.set('toJSON', {
+lessonRelation.set('toJSON', {
 	virtuals: true
 });
 
-module.exports = mongoose.model('ClassRegister', classRegister);
+module.exports = mongoose.model('Lesson_Relation', lessonRelation);
 
 
-
+// 수업 신청 할때 대기 리스트

@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -18,15 +20,18 @@ require('dotenv').config();
 const _ = require('lodash');
 
 
-// 교육 상세 리스트
+// 수업 상세 리스트
 router.get('/:classId', authMiddleware, async(req, res) => {
     const classId = req.params.classId;
+    let data;
     try{
-        let classInfo = await ClassList.findOne({ _id : classId }).select('classPicture classTitle classIntroduce classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
+        let classInfo = await Lesson.findOne({ _id : classId }).select('classPicture classTitle classIntroduce classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
         console.log('classInfo', classInfo);
         classInfo.currentAvailableCnt = (classInfo.availableCnt - classInfo.userList.length);
-        
-        res.json({ msg: "success", classListsDetail: classInfo })
+    
+        data = classInfo
+
+        res.json({ msg: 'success', data })  
     }catch(err){
         console.log('err', err)
         res.json({ msg : 'fail'})

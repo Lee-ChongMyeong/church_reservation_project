@@ -35,6 +35,7 @@ const options = {
           jwt: []
         }],
         basePath: "/v1",
+        schemes: ["http"]
         
     },
     

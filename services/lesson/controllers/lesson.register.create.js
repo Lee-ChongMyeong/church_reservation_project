@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -23,8 +25,8 @@ const _ = require('lodash');
 router.post('/register', authMiddleware, multer.fields([{ name: 'classPicture', maxCount: 10}, { name: 'teacherImg', maxCount:10 }]), authMiddleware, async(req, res) => {
     const user = res.locals.user;
     try{
-        if(user.status !== 'admin'){
-            return res.json({ msg: "register admin"})
+        if(user.status !== 'manager'){
+            return res.json({ msg: "register manager"})
         }
 
         let result = {
@@ -41,9 +43,9 @@ router.post('/register', authMiddleware, multer.fields([{ name: 'classPicture', 
             teacherImg: req.files.teacherImg[0].transforms[0].location,
             userId : user._id,
         }
-        await ClassList.create(result);
+        await Lesson.create(result);
         
-        res.json({ msg: 'success', result: result });
+        res.json({ msg: 'success', data: result });
     }catch(err){
         console.log('err', err)
         res.json({ msg : 'error' })

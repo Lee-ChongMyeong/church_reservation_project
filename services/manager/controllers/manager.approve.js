@@ -1,13 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const {Register, User, Approve} = require('../../../models');
+const {
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
+} = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
 
 
 // 교회 등록 승인
-router.post('/approve/:userId', authMiddleware, async(req, res) => {
-    const userId = req.params.userId;
+router.post('/approve/:gid', authMiddleware, async(req, res) => {
+    const userId = req.params.gid;
     try{
         let classPlaceList = [];
 
@@ -24,15 +32,15 @@ router.post('/approve/:userId', authMiddleware, async(req, res) => {
             console.log(classPlaceList);
 
 
-            const registerInfo = await Register.findOne({ userId : userId });
+            const registerInfo = await ManagerRelation.findOne({ userId : userId });
             classPlaceList.push(registerInfo.classPlace)
             console.log(classPlaceList);
 
             await User.updateOne({ _id : userId }, { $set : { classPlace : classPlaceList }});
             await User.updateOne({ _id : userId }, { $set : { applyStatus : false}});
-            await Register.deleteMany({ userId : userId })
+            await ManagerRelation.deleteMany({ userId : userId })
 
-            await Approve.create({
+            await Manager.create({
                 name : registerInfo.name,
                 classPlace : registerInfo.classPlace,
                 phoneNumber : registerInfo.phoneNumber,
@@ -40,17 +48,17 @@ router.post('/approve/:userId', authMiddleware, async(req, res) => {
                 userId : userId,
             });
 
-            res.json({ msg: 'success1' })   
+            res.json({ msg: 'success' })   
         }else{
-            const registerInfo = await Register.findOne({ userId : userId });
+            const registerInfo = await ManagerRelation.findOne({ userId : userId });
 
-            await User.updateOne({ _id : userId }, { $set : { status : 'admin'}});
+            await User.updateOne({ _id : userId }, { $set : { status : 'manager'}});
             await User.updateOne({ _id : userId }, { $set : { classPlace : registerInfo.classPlace }});
             await User.updateOne({ _id : userId }, { $set : { applyStatus : false}});
-            await Register.deleteMany({ userId : userId })
-            res.json({ msg: 'success2' })   
+            await ManagerRelation.deleteMany({ userId : userId })
+            res.json({ msg: 'success' })   
 
-            await Approve.create({
+            await Manager.create({
                 name : registerInfo.name,
                 classPlace : registerInfo.classPlace,
                 phoneNumber : registerInfo.phoneNumber,

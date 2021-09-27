@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const approve = new Schema(
+const manager = new Schema(
 	{
 		name: {type: String, required: true},
 		classPlace: { type: String, required: true},
@@ -12,18 +12,18 @@ const approve = new Schema(
 	{ timestamps: true, versionKey : false },
   );
 
-approve.virtual('approveId').get(function () {
+manager.virtual('approveId').get(function () {
 	return this._id.toHexString();
 });
 
-approve.set('toObject', {
+manager.set('toObject', {
 	virtuals: true
 });
-approve.set('toJSON', {
+manager.set('toJSON', {
 	virtuals: true
 });
 
-module.exports = mongoose.model('Approve', approve);
+module.exports = mongoose.model('Manager', manager);
 
-
+// manager 로 테이블 변경 필요
 

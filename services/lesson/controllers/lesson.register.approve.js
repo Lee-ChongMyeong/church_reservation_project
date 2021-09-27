@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -19,7 +21,7 @@ const _ = require('lodash');
 
 
 
-// 교육 등록 승인
+// 수업 등록 승인
 router.post('/register/:classId/approve', authMiddleware, async(req, res) => { 
     const user = res.locals.user;
     const classId = req.params.classId;

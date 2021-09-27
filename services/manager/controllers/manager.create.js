@@ -1,31 +1,61 @@
 const express = require('express');
 const router = express.Router();
-const {Register, User, Approve} = require('../../../models');
-const sanitize = require('../../../lib/sanitizeHtml');
+
 const authMiddleware = require('../../../auth/authMiddleware');
+const sanitize = require('../../../lib/sanitizeHtml');
+const s3 = require('../../../lib/s3');
+const multer = require('../../../lib/multer');
+require('dotenv').config();
+
+const {
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
+} = require('../../../models');
 
 // 교회 단체 등록 신청
 router.post('/', authMiddleware, async(req, res) => {
     try{
         const user = res.locals.user;
-        let classPlaceList = [];
+        let classPlaceList = [],
+            item,
+            total,
+            data = {};
 
         if(user.applyStatus == true){
             return res.json({ msg : 'admin checking' });
         }
 
-        const { classPlace, phoneNumber, introduce } = req.body;
-        await User.updateOne({ _id : user._id }, { $set : { applyStatus : true}});
+        console.log('1')
 
-        let result = await Register.create({
+        console.log('req.body', req.body);
+
+
+        console.log('2')
+
+        let result = await ManagerRelation.create({
             name : user.name,
-            classPlace : classPlace,
-            phoneNumber : phoneNumber,
-            introduce: introduce,
+            classPlace : req.body.classPlace,
+            phoneNumber : req.body.phoneNumber,
+            introduce: req.body.introduce,
             userId : user._id,
         });
+
+        console.log('result', result);
+        console.log('result.lengtrh', result.length);
+
+        await User.updateOne({ _id : user._id }, { $set : { applyStatus : true}});
         
-        res.status(200).json({ result })
+        data = {
+            item: result,
+            total: result.length
+        }
+
+        res.status(200).json({ msg: 'success', data })
 
     }catch(err){
         console.log(err);
@@ -34,7 +64,7 @@ router.post('/', authMiddleware, async(req, res) => {
 });
 
 /**
- * @swagger
+ * 
  * /manager:
  *  post:
  *    summary: 교회 단체 신청 (user)
@@ -65,9 +95,32 @@ router.post('/', authMiddleware, async(req, res) => {
  *    responses:
  *      200:
  *        description: A successful response
- *        content:
- *          application/json:
- *            schema:
+ */
+
+/**
+ * @swagger
+ * /manager:
+ *  post:
+ *    summary: 교회 단체 신청 (user)
+ *    tags: [manager]
+ *    parameters:
+ *      - name: body
+ *        in: body
+ *        schema:
+ *          type: object
+ *          properties:
+ *            classPlace:
+ *              example: "장소"
+ *            phoneNumber: 
+ *              example: "번호"
+ *            introduce: 
+ *              example: "소개"
+ * 
+ *    security:
+ *      - jwt: []
+ *    responses:
+ *      200:
+ *        description: A successful response
  */
 
 module.exports = router;

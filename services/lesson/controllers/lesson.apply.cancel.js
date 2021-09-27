@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -25,11 +27,11 @@ router.put('/apply/cancel/:classRegisterId', authMiddleware, async(req, res) => 
 
         let classRegisterInfo = await ClassRegister.findOne({ _id : classRegisterId });
         let studentId = classRegisterInfo.userId;
-        let classListInfo = await ClassList.findOne({ _id : classRegisterInfo.classId });
+        let classListInfo = await Lesson.findOne({ _id : classRegisterInfo.classId });
         let userList = classListInfo.userList;
         let updatedUserList = userList.splice(studentId, 1);
 
-        await ClassList.updateOne({_id : classRegisterInfo.classId }, { $set : { userList : updatedUserList }});
+        await Lesson.updateOne({_id : classRegisterInfo.classId }, { $set : { userList : updatedUserList }});
         await ClassRegister.updateOne({ _id : classRegisterId }, { $set : { approveStatus : false }})
 
         res.json({ msg : 'success'})

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const classList = new Schema(
+const lesson = new Schema(
 	{
         category: { type: String, required: true },
 		classTitle: { type: String, required: true },
@@ -31,15 +31,15 @@ const classList = new Schema(
 	{ timestamps: true, versionKey : false }
   );
 
-classList.virtual('classId').get(function () {
+lesson.virtual('classId').get(function () {
 	return this._id.toHexString();
 });
 
-classList.set('toObject', {
+lesson.set('toObject', {
 	virtuals: true
 });
-classList.set('toJSON', {
+lesson.set('toJSON', {
 	virtuals: true
 });
 
-module.exports = mongoose.model('ClassList', classList);
+module.exports = mongoose.model('Lesson', lesson);

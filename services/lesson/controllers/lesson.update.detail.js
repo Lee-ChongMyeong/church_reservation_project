@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+  Book,
+  Lesson,
+  Manager,
+  Material,
+  User,
+  ManagerRelation,
+  LessonRelation
   } = require('../../../models');
   const sanitize = require('../../../lib/sanitizeHtml');
   const authMiddleware = require('../../../auth/authMiddleware');
@@ -24,7 +26,7 @@ router.put('/detail/:classId', authMiddleware, async(req, res) => {
     const classId = req.params.classId;
     const data = req.body;
     try{
-        let classInfo = await ClassList.findOne({ _id : classId }).select('classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
+        let classInfo = await Lesson.findOne({ _id : classId }).select('classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
         
         data = _.pickBy(
             {

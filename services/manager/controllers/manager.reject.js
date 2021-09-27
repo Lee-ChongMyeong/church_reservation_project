@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const {Register, User, Approve} = require('../../../models');
+const {
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
+} = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
 
@@ -14,7 +22,7 @@ router.delete('/reject/:userId', authMiddleware, async(req, res) => {
         const userInfo = await User.findOne({ _id : userId });
         // console.log('userInfo', userInfo);
         await User.updateOne({ _id : userId }, { $set : { applyStatus : false }});
-        await Register.deleteMany({ userId : userId })
+        await ManagerRelation.deleteMany({ userId : userId })
         
         res.json({ msg: 'success' })   
     }catch(err){

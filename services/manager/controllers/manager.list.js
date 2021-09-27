@@ -1,6 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const {Register, User, Approve} = require('../../../models');
+const {
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
+} = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
 
@@ -8,10 +16,17 @@ const authMiddleware = require('../../../auth/authMiddleware');
 // 교회 단체 승인 리스트
 router.get('/approve', authMiddleware, async(req, res) => {
 
+    let items, total, data = {};
+
     try{
-        const approveInfo = await Approve.find({ }).select('name classPlace phoneNumber introduce userId ')
+        const approveInfo = await Manager.find({ }).select('name classPlace phoneNumber introduce userId ')
     
-        res.json({ msg: 'success', approveInfo: approveInfo })  
+        data = {
+            items: approveInfo,
+            total: approveInfo.length
+        }
+
+        res.json({ msg: 'success', data})  
     }catch(err){
         console.log(err);
 		res.status(400).json({ msg: 'fail'})
@@ -20,10 +35,12 @@ router.get('/approve', authMiddleware, async(req, res) => {
 
 /**
  * @swagger
- * /manager:
+ * /manager/approve:
  *   get:
  *     summary: 교회 단체 승인 리스트 (admin)
  *     tags: [manager]
+ *     security:
+ *       - jwt: []
  *     responses:
  *       200:
  *         description: A successful response

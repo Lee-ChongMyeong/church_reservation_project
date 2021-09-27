@@ -14,8 +14,8 @@ const cors = require('cors');
 app.use(cors({ origin: '*', credentials: true }));
 
 // 미들웨어
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(express.static('public'));
 
 const passport = require('./auth/passport');

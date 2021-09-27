@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
 	Book,
-    ClassList,
+    Lesson,
     Material,
     User
 } = require('../models');

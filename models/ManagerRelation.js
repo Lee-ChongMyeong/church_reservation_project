@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const register = new Schema(
+const managerRelation = new Schema(
 	{
 		name: {type: String, required: true},
 		classPlace: { type: String, required: true},
@@ -12,18 +12,17 @@ const register = new Schema(
 	{ timestamps: true, versionKey : false }
 );
 
-register.virtual('registerId').get(function () {
+managerRelation.virtual('registerId').get(function () {
 	return this._id.toHexString();
 });
 
-register.set('toObject', {
+managerRelation.set('toObject', {
 	virtuals: true
 });
-register.set('toJSON', {
+managerRelation.set('toJSON', {
 	virtuals: true
 });
 
-module.exports = mongoose.model('Register', register);
+module.exports = mongoose.model('Manager_Relation', managerRelation);
 
-
-
+// manager 등록 대기중

@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -29,7 +31,7 @@ router.get('/apply/pending', authMiddleware, async(req, res) => {
         let temp = {};
         let total;
 
-        myClassList = await ClassList.find({ userId : user._id, approveStatus : true});
+        myClassList = await Lesson.find({ userId : user._id, approveStatus : true});
 
         for (let i=0; i < myClassList.length; i++ ) {
             myClassListId.push(myClassList[i]._id);

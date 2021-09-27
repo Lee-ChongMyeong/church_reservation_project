@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-	Book,
-    ClassList,
-    Register,
-    ClassRegister,
-    User
+    Book,
+    Lesson,
+    Manager,
+    Material,
+    User,
+    ManagerRelation,
+    LessonRelation
 } = require('../../../models');
 const sanitize = require('../../../lib/sanitizeHtml');
 const authMiddleware = require('../../../auth/authMiddleware');
@@ -24,7 +26,7 @@ router.delete('/register/reject/:uid', authMiddleware, async(req, res) => {
     const user = res.locals.user;
     const uid = req.params.uid;
     try{
-        let waitingList = await ClassList.deleteOne({ _id: uid, approveStatus: false })
+        let waitingList = await Lesson.deleteOne({ _id: uid, approveStatus: false })
         
         if(waitingList.deletedCount == 0 ){
             return res.json({ msg: 'NO_EXISTS_DATA'})

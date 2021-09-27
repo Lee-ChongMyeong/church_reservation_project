@@ -1,19 +1,19 @@
-const Book = require('./book');
-const ClassList = require('./classList');
-const Material = require('./material');
-const User = require('./user');
-const Register = require('./register');
-const ClassRegister = require('./classRegister');
-const Approve = require('./approve');
+const Book = require('./Book');
+const Lesson = require('./Lesson');
+const Material = require('./Material');
+const User = require('./User');
+const ManagerRelation = require('./ManagerRelation');
+const LessonRelation = require('./LessonRelation');
+const Manager = require('./Manager');
 
 const DB = {
     Book,
-    ClassList,
+    Lesson,
+    Manager,
     Material,
     User,
-    Register,
-    Approve,
-    ClassRegister
+    ManagerRelation,
+    LessonRelation
 };
 
 module.exports = DB;
