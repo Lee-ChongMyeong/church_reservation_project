@@ -5,9 +5,9 @@ const Manager = require('./Manager');
 
 const DB = {
     Lesson,
-    Manager,
     User,
     ManagerRelation,
+    Manager,
 };
 
 module.exports = DB;

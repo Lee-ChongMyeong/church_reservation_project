@@ -10,7 +10,7 @@ const kakaoStrategy = new KakaoStrategy(
 		clientSecret: process.env.KAKAO_SECRET,
 		// callbackURL: 'http://localhost:3000/auth'
 		// callbackURL: 'http://localhost:3000/auth/kakao/oauth'
-		callbackURL: 'http://54.180.139.155/passport/auth/kakao/oauth'
+		callbackURL: 'http://3.35.17.147/passport/auth/kakao/oauth'
 		// callbackURL: 'http://localhost:3000/auth'
 		// 소셜 로그인 -> 승인 -> 백엔드 api -> redirect 
 	},
