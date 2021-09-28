@@ -26,7 +26,7 @@ router.get('/:classId', authMiddleware, async(req, res) => {
     let data;
     try{
         let classInfo = await Lesson.findOne({ _id : classId }).select('classPicture classTitle classIntroduce classDay classStartTime classEndTime availableCnt userList teacherName teacherImg').lean()
-        console.log('classInfo', classInfo);
+
         classInfo.currentAvailableCnt = (classInfo.availableCnt - classInfo.userList.length);
     
         data = classInfo

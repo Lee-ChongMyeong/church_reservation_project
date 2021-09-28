@@ -16,7 +16,7 @@ const options = {
                 description: "Local server"
             },
             {
-                url: "http://54.180.139.155",
+                url: "http://3.35.17.147",
                 description: "Production server"
             }
         ],

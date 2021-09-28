@@ -22,17 +22,21 @@ const _ = require('lodash');
 
 
 // 수업 등록 승인
-router.post('/register/:classId/approve', authMiddleware, async(req, res) => { 
+router.post('/register/:uid/approve', authMiddleware, async(req, res) => { 
     const user = res.locals.user;
-    const classId = req.params.classId;
-    console.log(classId);
+    const classId = req.params.uid;
+    let data;
+
     try{
         if(user.approveStatus == true){
             return res.json({ msg: 'not yet approved'})
         }
 
-        await ClassList.updateOne({ _id : classId }, { $set : { approveStatus : true }})
-        res.json({ msg: 'success' })
+        await Lesson.updateOne({ _id : classId }, { $set : { approveStatus : true }})
+        let classInfo = await Lesson.findOne({ _id : classId })
+        data = classInfo
+
+        res.json({ msg: 'success', data })
 
     }catch(err){
         console.log(err);

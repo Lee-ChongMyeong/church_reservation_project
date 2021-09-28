@@ -40,12 +40,12 @@ router.post('/register/:uid', multer.single('teacherImg'), authMiddleware, async
             classEndTime: req.body.classEndTime,
             availableCnt: req.body.availableCnt,
             teacherName: req.body.teacherName,
-            teacherImg: req.file.transforms[0].location,
+            teacherImg: req.file.transforms[0].location || "",
             userId : user._id,
         }
         await Lesson.create(result);
         
-        res.json({ msg: 'success', result: result });
+        res.json({ msg: 'success', data: result });
     }catch(err){
         console.log('err', err)
         res.json({ msg : 'error' })
